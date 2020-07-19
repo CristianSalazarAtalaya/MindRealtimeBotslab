@@ -1,72 +1,20 @@
-let app = require('express')();
-let http = require('http').Server(app);
-let io = require('socket.io')(http);
+// const express = require('express')
+// const app = express()
+const express = require("express"),
+  bodyParser = require("body-parser"),
+  app = express().use(bodyParser.json());
 
+//configuracion
+const { config } = require('./config/index.js')
 
-app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/index.html')
-});
+//Variables de entorno
+process.env.FB_VERIFICATION_TOKEN = 'BOTSLAB_TOKEN_VERIFICATION' ;
+process.env.PAGE_ACCESS_TOKEN = 'EAAgFgSzOWVIBAC2CXKZBxKTXV0mbwgOFiHEIPLIvd61iaMvvqKyz0TQicWqkGsv9tZBv4A5t5hHC6TjqH67WQ66JdCmVft57KZB309VPcVPu9wSsxBYfHGlFsTFFyrqsCbXmCxQq0pFxhZCd1p6USUZAdLTI50nWvEK1Ml3ZBhHLweXiKn4cEw';
 
+//rutas
+const webbookFacebookApi = require('./routes/webhookFacebook.js')
+webbookFacebookApi(app);
 
-http.listen(3000, () => {
-    console.log('Listening on port *: 3000');
-});
-
-io.on('connection', socket => {
-    
-    //console.info(`Client connected [id=${socket.id}]`);
-    chatID = socket.id
-    ///socket.join(chatID)
-    //socket.join(chatID)
-    //console.log(chatID)
-
-
-    socket.emit('connections', Object.keys(io.sockets.connected).length);
-
-    socket.on('disconnect', () => {
-        console.log("A user disconnected" + chatID);
-    });
-
-    // socket.on('chat-message', (data) => {
-    //     console.log(data);
-    //     socket.broadcast.emit('chat-message', (data));
-    // });
-    socket.on('chat-message', (msg) => {
-        console.log('miguel' +chatID);
-        //console.log(msg.chatID)
-
-        //socket.broadcast.emit('chat-message', ({message:'Prro' }));
-        //socket.emit('chat-message', ({message:'Prro', user: 'Bots Lab' }));
-
-        var mensaje = 'No te endteindo prro'
-            if(msg.message.toUpperCase().indexOf('HOLA') >-1)
-                mensaje = 'Holra RAATON alias Miguel'
-
-        io.to(chatID).emit('chat-message', ({message:mensaje, user: 'IA' }));
-        
-        // //Send message to only that particular room
-        // socket.broadcast.emit('chat-message', {
-        //     message:'Prro', 
-        //     user: 'Bots Lab' 
-        // });
-
-    });
-
-    socket.on('typing', (data) => {
-        socket.broadcast.emit('typing', (data));
-    });
-
-    socket.on('stopTyping', () => {
-        socket.broadcast.emit('stopTyping');
-    });
-
-    socket.on('joined', (data) => {
-    
-        socket.broadcast.emit('joined', (data));
-    });
-
-    socket.on('leave', (data) => {
-        socket.broadcast.emit('leave', (data));
-    });
-
-});
+app.listen(3000, function(){
+    console.log(`Listenig http://localhost:${config.port}`);
+})
