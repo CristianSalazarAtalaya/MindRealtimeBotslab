@@ -1,7 +1,7 @@
 const express =require('express')
 
 //utilitarios
-const { chatsMock } = require('../utils/mocks/chats');
+//const { chatsMock } = require('../utils/mocks/chats');
 
 //PAGE_ACCESS_TOKEN = 'EAAgFgSzOWVIBAC2CXKZBxKTXV0mbwgOFiHEIPLIvd61iaMvvqKyz0TQicWqkGsv9tZBv4A5t5hHC6TjqH67WQ66JdCmVft57KZB309VPcVPu9wSsxBYfHGlFsTFFyrqsCbXmCxQq0pFxhZCd1p6USUZAdLTI50nWvEK1Ml3ZBhHLweXiKn4cEw';
 //VERIFY_TOKEN = "PRUEBA_80K2";
@@ -17,20 +17,13 @@ function webbookFacebookApi(app){
     const router = express.Router();
     app.use("/api/webhook/facebook", router);
 
-    // const validateWebhook = function validateWebhook(token) {
-    //     return (req, res) => facebook.ValidateWebhook.validateServer(req, res, token);
-    //   }
-    // const validator = validateWebhook(VERIFY_TOKEN);
-
-    // router.get('/', validator);
-
     router.get('/', (req, res) => facebook.ValidateWebhook.validateServer(req,res) );
     
     router.post('/', async function(req, response){
 
         const incomingMessages = messageParser.parsePayload(req.body);  
 
-        senderId  = incomingMessages[0]["sender"]["id"];
+        var senderId  = incomingMessages[0]["sender"]["id"];
         console.log(senderId);
 
         await messagingClient.markSeen(senderId);
